@@ -27,6 +27,19 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            position: relative; /* স্ট্যাম্পের পজিশনিংয়ের জন্য এটি গুরুত্বপূর্ণ */
+        }
+        
+        /* ব্যাকগ্রাউন্ড স্ট্যাম্পের জন্য নতুন ক্লাস */
+        .stamp-watermark {
+            position: absolute;
+            bottom: 50px; /* স্ট্যাম্পটিকে উপরে তোলার জন্য 'bottom' এর মান 20px থেকে 50px এ পরিবর্তন করা হয়েছে */
+            left: 45%; /* স্ট্যাম্পটিকে সামান্য বাম দিকে সরানোর জন্য 'left' এর মান 50% থেকে 45% এ পরিবর্তন করা হয়েছে */
+            transform: translateX(-50%); /* হরাইজন্টালি সেন্টার করার জন্য */
+            width: 100px; /* স্ট্যাম্পের আকার কমিয়ে 100px করা হয়েছে */
+            opacity: 1; /* স্বচ্ছতা 100% করা হয়েছে */
+            z-index: 0; /* নিশ্চিত করা হয়েছে যে এটি সমস্ত কন্টেন্টের পিছনে থাকবে */
+            pointer-events: none; /* যাতে এটি কোনো ক্লিক ইভেন্ট ব্লক না করে */
         }
 
         /* The main content area that will grow to fill the available space */
@@ -35,6 +48,8 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            position: relative; /* অন্যান্য কন্টেন্টকে স্ট্যাম্পের উপরে রাখতে */
+            z-index: 1;
         }
         
         .top-image {
@@ -212,7 +227,7 @@
         */
         .watermark-image {
             position: absolute;
-            top: 56%; /* Adjusted from 58% to 56% to move it up slightly */
+            top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             max-width: 65%; 
@@ -316,6 +331,17 @@
                 border-style: solid !important; /* Change to solid or none if you prefer */
                 border-color: transparent !important; /* Make the border invisible */
             }
+            /* Start: Print Fix for 'MONEY RECEIPT' */
+            .top-image-container {
+                position: relative !important;
+            }
+            .money-receipt-text {
+                position: absolute !important;
+                right: 1.5rem !important;
+                bottom: 0 !important;
+                transform: translateY(50%) !important;
+            }
+            /* End: Print Fix for 'MONEY RECEIPT' */
         }
         
         /* Special styles for mobile view to handle the long text without wrapping badly */
@@ -368,7 +394,6 @@
             <input type="text" id="phoneInput" placeholder="Type Phone Number">
         </div>
         <div class="mb-2">
-            <label class="block text-gray-700 font-bold mb-1">Email:</label>
             <!-- Updated Email Input to pre-fill @gmail.com -->
             <div class="email-input-container">
                 <input type="text" id="emailPrefixInput" placeholder="Type Email Prefix">
@@ -385,7 +410,7 @@
             <input type="text" id="invoiceNoInput" placeholder="Type Invoice Number">
         </div>
         <div class="mb-2">
-            <!-- ইনপুট বক্সের টাইপ "date" রাখা হয়েছে -->
+            <!-- ইনপুট বক্সের টাইপ "date" রাখা হয়েছে -->
             <label class="block text-gray-700 font-bold mb-1">Invoice Date:</label>
             <input type="date" id="invoiceDateInput">
         </div>
@@ -479,6 +504,9 @@
     
     <!-- A4 Form Container -->
     <div class="a4-container shadow-lg rounded-lg">
+        <!-- স্ট্যাম্পের জন্য নতুন ইমেজ ট্যাগ -->
+        <img src="https://lh3.googleusercontent.com/pw/AP1GczNYlYr-c3zmj710XwmGHWdK-Nuv6A3xqa_C4yRLLe3IFhuK4NxVygVs3keQCBlixksDUQhy7jcr71-AdbtJpPouXgWmDqOc8MBxEp1_XeDYzTiVCm6H-4Az7NxW7HtCdM9fUxDW2XmzGftE7aX-eW3Z=w945-h945-s-no-gm?authuser=0" alt="" class="stamp-watermark">
+
         <!-- Top Image Section with Money Receipt text aligned using flexbox -->
         <div class="top-image-container">
             <img src="https://lh3.googleusercontent.com/pw/AP1GczP-nVNgVK20SaA9VE440rrSdD-iluAmeoH9G1b0CiFXm78y36tce3SQ8rkkWSfnb01c7Ab3Dnd83uG1nnlqbHkv3VNuHfL_MSNg862bluA0n0-DdjaTJhLojQxEq2DYnG0a0pUFzZK4_DLi5E8pzIfU=w1240-h208-s-no-gm?authuser=0" alt="Top of the invoice" class="top-image">
@@ -502,6 +530,7 @@
 
                 <!-- Right Section -->
                 <div class="w-1/2 flex flex-col items-end">
+                    <!-- Updated Invoice No. span and label -->
                     <p class="text-blue-600">Invoice No: <span id="invoiceNo" class="text-black font-normal ml-1"></span></p>
                     <p class="text-blue-600 mt-2">Invoice Date: <span id="invoiceDate" class="text-black font-normal ml-1"></span></p>
                     <p class="text-blue-600 font-bold mt-4">PAYMENT METHOD</p>
@@ -533,10 +562,8 @@
                     </div>
                 </div>
             </div>
-
             <!-- Watermark Layer (Now as a sibling to the table, but within the relative parent) -->
             <img src="https://lh3.googleusercontent.com/pw/AP1GczObm7bQ6s9CmzxkctALvk2osGPajcBDYy4MwbsrjKQ80fCionvx572F_6OIfcAhpXyUwkyxqI-6K6L1xRgsXvzQM5zOR510Dz09JGRGG4qrZwdGa1Rfg3J1e_nBP71R1n5eARFFOligq9Db9blXalCO=w1209-h945-s-no-gm?authuser=0" alt="Watermark Logo" class="watermark-image">
-
             <!-- Table Section. Fixed height of 400px as requested by the user. -->
             <div class="border border-blue-600 rounded-lg mt-4 relative z-10 flex flex-col h-[400px]">
                 <!-- Table Content Layer -->
@@ -548,7 +575,6 @@
                         <div class="p-2 border-r border-blue-400">UNIT</div>
                         <div class="p-2">AMOUNT</div>
                     </div>
-                    
                     <!-- Main Content Row - Now flex-grow to absorb the empty space -->
                     <div class="grid grid-cols-[1fr_2fr_1fr_1fr] text-black text-center flex-grow">
                         <!-- The height of this row will now expand dynamically -->
@@ -557,7 +583,6 @@
                         <div id="unitCell" class="p-2 border-r border-blue-600 text-center"></div>
                         <div id="amountCell" class="p-2 text-center"></div>
                     </div>
-                    
                     <!-- Amount Paid Row - flex-shrink-0 to not shrink -->
                     <div class="grid grid-cols-[1fr_2fr_1fr_1fr] text-black text-center flex-shrink-0">
                         <div class="p-2 border-r border-blue-600"></div>
@@ -565,7 +590,6 @@
                         <div class="p-2 border-r border-blue-600 font-bold text-[#094ea0] text-center border-t border-b border-blue-600">Amount Paid</div>
                         <div id="amountPaidCell" class="p-2 font-bold text-center border-t border-b border-blue-600"></div>
                     </div>
-                    
                     <!-- Due Amount Row - flex-shrink-0 to not shrink -->
                     <div class="grid grid-cols-[1fr_2fr_1fr_1fr] text-black text-center flex-shrink-0">
                         <div class="p-2 border-r border-blue-600"></div>
@@ -575,7 +599,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Customer names section is now directly below the table, with no top margin. -->
             <div class="flex flex-col justify-start text-left mt-0 flex-shrink-0">
                 <p class="text-blue-600 font-bold underline">Customer's Name</p>
@@ -587,79 +610,58 @@
                 </div>
             </div>
         </div>
-        
         <!-- Bottom section with stamp and signature, now using flexbox -->
         <div class="bottom-section">
-            <!-- This container now aligns the stamp and signature, linking their positions -->
-            <div class="merged-elements flex justify-between items-end w-full px-6">
-                <!-- New container to center the stamp -->
+            <!-- This container will hold the stamp and signature sections side-by-side -->
+            <div class="merged-elements">
+                <!-- The stamp container is here -->
                 <div class="stamp-container">
-                    <img src="https://lh3.googleusercontent.com/pw/AP1GczOoRXgeZYru-nFUkeZWEXHXCykyGLwYrszY4w1U9BxHGpHa2bK3iTxuSS32hw3cTKF_s_kqFI3kNSCK3mkoILty5AgB0Og5LhH_jYs3VO_ZodLDwKjS1woRGP7T6lYwqwv1YOd80nRk9Hq3VX5lAZcT=w945-h945-s-no-gm?authuser=0" alt="Official Stamp" class="stamp-image">
+                    <img id="stampImage" src="https://lh3.googleusercontent.com/pw/AP1GczOpW9_b0_Ww4Vb_p78iR3z8M7Yf-fB0C2O-0q2J1I8tT5H1y0S8S0n6X9v_l6K9o-5x_k_z_5o_9_b_r_4_f_5_g_x_z_9-c-c-d-f-b-w=w354-h346-s-no-gm?authuser=0" alt="Company Stamp" class="stamp-image hidden" />
                 </div>
-
-                <!-- Name & Signature part -->
+                <!-- The signature section is here -->
                 <div class="signature-section">
-                    <div class="border-b border-black w-48 h-12 mb-2"></div>
-                    <p class="font-bold text-black">Name & Signature</p>
+                    <!-- The signature image is now hidden by default as per a previous request -->
+                    <img id="signatureImage" src="https://lh3.googleusercontent.com/pw/AP1GczO_l5sX7yC6W4Q-1G4E7Y3l-i5x-X1t_s_0_n-x_o_p_q_r_s_t_u_v_w_x_y_z_5q_u=w354-h346-s-no-gm?authuser=0" alt="Signature" class="w-24 h-auto object-contain hidden" />
+                    <!-- Updated text and styling as per the user's request -->
+                    <p class="text-black pt-2 mt-2 border-t border-black">Name & Signature</p>
                 </div>
             </div>
-
-            <!-- Bottom Image Section - positioned below the merged elements -->
-            <img src="https://lh3.googleusercontent.com/pw/AP1GczMQmhgA1CtOTSdgUi9FixF-mEFPEuMbf7d1NzL57TV8zP8OdwyNdpGLSpAdudSwkLkUbfG37Nm42NaF3JKo4NBtxfsapiMHr6QJ0eGBHrNYf5zxZyyzElGE06AjB1AK13VWgmeibWGY7L_fyeVwHF6g=w1240-h158-s-no-gm?authuser=0" alt="Bottom of the invoice" class-name="bottom-image">
+            <!-- Bottom image now has flex-shrink-0 to not shrink with content -->
+            <img src="https://lh3.googleusercontent.com/pw/AP1GczNuwfe7w6GcU14Sf-ObDjvkIQuoiAlhTK_8SZ3UEdY9GZEYLOaVVHfAK-mUvb6JDviKg3FhmL_V3o_O238zptuBicOA3g_GJYSVI601UosmH_fh4DZI_lu4GQ8Vg_jV5hj9E1Nv1hBlNqI3KWzypDae=w1240-h158-s-no-gm?authuser=0" alt="Bottom of the invoice" class="bottom-image flex-shrink-0">
         </div>
     </div>
 
+    <!-- JavaScript code for dynamic functionality and keyboard shortcuts -->
     <script>
+        // ফর্মের বিভিন্ন উপাদানকে অ্যাক্সেস করার জন্য ভেরিয়েবল তৈরি করা হয়েছে
         const nameInput = document.getElementById('nameInput');
         const phoneInput = document.getElementById('phoneInput');
-        // Updated variable to match the new input field ID
         const emailPrefixInput = document.getElementById('emailPrefixInput');
         const addressInput = document.getElementById('addressInput');
         const invoiceNoInput = document.getElementById('invoiceNoInput');
         const invoiceDateInput = document.getElementById('invoiceDateInput');
         const bookingInput = document.getElementById('bookingInput');
-        const monthSelect = document.getElementById('monthSelect');
-        const yearSelect = document.getElementById('yearSelect');
         const rateInput = document.getElementById('rateInput');
         const unitInput = document.getElementById('unitInput');
         const amountPaidInput = document.getElementById('amountPaidInput');
         const customerNameInput = document.getElementById('customerNameInput');
-        const printButton = document.getElementById('printButton');
         const addCustomerButton = document.getElementById('addCustomerButton');
         const customerList = document.getElementById('customerList');
-        
-        // New elements for the two-column display
-        const firstColumn = document.getElementById('firstColumn');
-        const secondColumn = document.getElementById('secondColumn');
-
-        // Payment method checkboxes
+        const customerNamesOnForm = document.getElementById('customerNamesOnForm');
+        const monthSelect = document.getElementById('monthSelect');
+        const yearSelect = document.getElementById('yearSelect');
         const cashCheckbox = document.getElementById('cashCheckbox');
         const accountCheckbox = document.getElementById('accountCheckbox');
         const upiCheckbox = document.getElementById('upiCheckbox');
         const chequeCheckbox = document.getElementById('chequeCheckbox');
+        const printButton = document.getElementById('printButton');
+        const stampImage = document.getElementById('stampImage');
+        const signatureImage = document.getElementById('signatureImage');
 
-        const invoiceToName = document.getElementById('invoiceToName');
-        const invoiceToPhone = document.getElementById('invoiceToPhone');
-        const invoiceToEmail = document.getElementById('invoiceToEmail');
-        const invoiceToAddress = document.getElementById('invoiceToAddress');
-        const invoiceNo = document.getElementById('invoiceNo');
-        const invoiceDate = document.getElementById('invoiceDate');
-        
-        const bookingCell = document.getElementById('bookingCell');
-        const descCell = document.getElementById('descCell');
-        const unitCell = document.getElementById('unitCell');
-        const amountCell = document.getElementById('amountCell');
+        // Customer data array
+        let customers = [];
 
-        const amountPaidCell = document.getElementById('amountPaidCell');
-        const dueAmountCell = document.getElementById('dueAmountCell');
-
-        // Payment method display boxes
-        const cashBox = document.getElementById('cashBox');
-        const accountBox = document.getElementById('accountBox');
-        const upiBox = document.getElementById('upiBox');
-        const chequeBox = document.getElementById('chequeBox');
-
-        // A list of all focusable input elements in the desired order
+        // একটি অ্যারেতে ফোকাসযোগ্য ইনপুট ফিল্ডগুলো সংরক্ষণ করা হয়েছে কিবোর্ড নেভিগেশনের জন্য
         const focusableElements = [
             nameInput,
             phoneInput,
@@ -673,315 +675,199 @@
             rateInput,
             unitInput,
             amountPaidInput,
-            customerNameInput,
-            // Added payment method checkboxes to the navigation list
-            cashCheckbox,
-            upiCheckbox,
-            accountCheckbox,
-            chequeCheckbox
+            customerNameInput
         ];
         
-        // Add event listeners for the 'keydown' event to all focusable elements
-        focusableElements.forEach(input => {
-            input.addEventListener('keydown', (event) => {
-                const currentIndex = focusableElements.indexOf(event.target);
-                
-                // If the pressed key is 'ArrowDown'
-                if (event.key === 'ArrowDown') {
-                    event.preventDefault(); // Prevent default browser behavior (like page scrolling)
+        // পেমেন্ট মেথড চেক বক্সগুলোর একটি অ্যারে
+        const paymentCheckboxes = [
+            cashCheckbox,
+            accountCheckbox,
+            upiCheckbox,
+            chequeCheckbox
+        ];
 
-                    // Find the next element in the list
-                    const nextIndex = currentIndex + 1;
-                    if (nextIndex < focusableElements.length) {
-                        focusableElements[nextIndex].focus();
-                    }
-                }
-                // If the pressed key is 'ArrowUp'
-                else if (event.key === 'ArrowUp') {
-                    event.preventDefault(); // Prevent default browser behavior
-                    const previousIndex = currentIndex - 1;
-                    // If there's a previous element, focus it
-                    if (previousIndex >= 0) {
-                        focusableElements[previousIndex].focus();
-                    }
-                }
-                // If the pressed key is 'Enter' on the customerNameInput field
-                else if (event.key === 'Enter' && event.target.id === 'customerNameInput') {
-                    event.preventDefault(); // Prevent form submission
-                    addCustomerButton.click(); // Simulate a click on the "Add Customer" button
-                }
-                // New logic: If the pressed key is 'Enter' and the target is a checkbox
-                else if (event.key === 'Enter' && event.target.type === 'checkbox') {
-                    event.preventDefault();
-                    event.target.checked = !event.target.checked; // Toggle the checked state
-                    updatePaymentMethod(); // Update the display to reflect the change
-                }
-            });
-        });
+        // Function to format numbers in Indian system
+        function formatIndianNumber(num) {
+            if (isNaN(num) || num === null || num === undefined) {
+                return '';
+            }
+            const numberString = Math.round(num).toString();
+            if (numberString.length <= 3) {
+                return numberString;
+            }
+            const lastThree = numberString.substring(numberString.length - 3);
+            const otherNumbers = numberString.substring(0, numberString.length - 3);
+            const formattedOthers = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',');
+            return formattedOthers + ',' + lastThree;
+        }
         
-        // **NEW LOGIC: Focus on the first input if nothing is focused and down arrow is pressed**
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'ArrowDown') {
-                // Check if the currently active element is not a form control or is the body itself
-                const activeElement = document.activeElement;
-                const isInputFocused = focusableElements.includes(activeElement);
-                
-                if (!isInputFocused) {
-                    nameInput.focus();
-                    event.preventDefault(); // Prevent page from scrolling
-                }
-            }
-        });
-
-
-        /**
-         * Indian Currency Formatter Function
-         * This function takes a number and formats it with commas according.
-         * For example: 100000 -> 1,00,000
-         * @param {number} number The number to format.
-         * @returns {string} The formatted string with commas and the "/-" suffix.
-         */
-        function formatIndianCurrency(number) {
-            // Check if the number is valid. If not, return "0/-"
-            if (isNaN(number)) {
-                return "0/-";
-            }
-            // Use Intl.NumberFormat to get the correct Indian locale formatting.
-            const formatter = new Intl.NumberFormat('en-IN', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2
-            });
-            return `${formatter.format(number)}/-`;
-        }
-
-        // Function to populate the month and year select fields
-        function populateSelects() {
-            const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
-            const monthOptions = months.map(month => `<option value="${month}">${month}</option>`).join('');
-            monthSelect.innerHTML += monthOptions;
-
-            const currentYear = new Date().getFullYear();
-            let yearOptions = '';
-            for (let i = 2025; i <= 2035; i++) {
-                yearOptions += `<option value="${i}">${i}</option>`;
-            }
-            yearSelect.innerHTML += yearOptions;
-        }
-
-        // Function to update the main form fields based on input values and perform calculations
+        // Function to update the form values from input fields
         function updateForm() {
-            // Update personal details, converting to uppercase (except email)
-            invoiceToName.textContent = nameInput.value.toUpperCase();
-            invoiceToPhone.textContent = phoneInput.value.toUpperCase();
-            // BEGIN: Updated logic for the Email field
-            const emailPrefix = emailPrefixInput.value.trim();
-            if (emailPrefix) {
-                invoiceToEmail.textContent = emailPrefix + '@gmail.com';
-            } else {
-                invoiceToEmail.textContent = '';
-            }
-            // END: Updated logic for the Email field
-            invoiceToAddress.textContent = addressInput.value.toUpperCase();
-            
-            // ইনপুট বক্সের তারিখ yyyy-mm-dd ফরম্যাটে আসবে, তাই একে dd/mm/yyyy তে পরিবর্তন করা হচ্ছে
-            const dateValue = invoiceDateInput.value;
-            if (dateValue) {
-                const [year, month, day] = dateValue.split('-');
-                invoiceDate.textContent = `${day}/${month}/${year}`;
-            } else {
-                invoiceDate.textContent = '';
-            }
-            
-            // Generate the complex invoice number
+            // Update the header details with uppercase for most fields, lowercase for email
+            document.getElementById('invoiceToName').textContent = nameInput.value.toUpperCase();
+            document.getElementById('invoiceToPhone').textContent = phoneInput.value.toUpperCase();
+            document.getElementById('invoiceToEmail').textContent = emailPrefixInput.value.toLowerCase() + '@gmail.com';
+            document.getElementById('invoiceToAddress').textContent = addressInput.value.toUpperCase();
+
+            // Updated Invoice No. formatting logic to remove all spaces
             const selectedMonth = monthSelect.value;
             const selectedYear = yearSelect.value;
-            const invoiceNumberPart = invoiceNoInput.value;
-            
-            let fullInvoiceNumber = '';
-            if (selectedMonth && selectedYear && invoiceNumberPart) {
+            const invoiceNoValue = invoiceNoInput.value;
+            let formattedInvoiceNo = '';
+
+            if (selectedMonth && selectedYear && invoiceNoValue) {
                 const monthShort = selectedMonth.substring(0, 3).toUpperCase();
-                const yearShort = selectedYear.substring(2);
-                fullInvoiceNumber = `NIT/${monthShort}${yearShort}/${invoiceNumberPart}`;
+                const yearShort = selectedYear.toString().slice(-2);
+                formattedInvoiceNo = `NIT/${monthShort}${yearShort}/${invoiceNoValue.toUpperCase()}`;
+            } else {
+                formattedInvoiceNo = invoiceNoValue.toUpperCase();
             }
-            invoiceNo.textContent = fullInvoiceNumber;
+            document.getElementById('invoiceNo').textContent = formattedInvoiceNo;
 
-            // Set the booking and unit cells directly
-            bookingCell.textContent = bookingInput.value.toUpperCase();
-            unitCell.textContent = unitInput.value.toUpperCase();
+            // Handle invoice date display
+            let invoiceDateValue = invoiceDateInput.value;
+            if (invoiceDateValue) {
+                const [year, month, day] = invoiceDateValue.split('-');
+                document.getElementById('invoiceDate').textContent = `${day}/${month}/${year}`;
+            } else {
+                document.getElementById('invoiceDate').textContent = '';
+            }
 
-            // Get selected month and year values
-            const timeText = (selectedMonth && selectedYear) ? `(${selectedMonth} ${selectedYear})` : '';
-
-            // Update the description cell with multiple lines
-            const bookingText = bookingInput.value.trim() ? bookingInput.value.trim().toUpperCase() : '';
-            const rateValue = parseFloat(rateInput.value);
-            const rateText = !isNaN(rateValue) ? `${formatIndianCurrency(rateValue)} PER PERSON` : '';
+            // Update the table details
+            document.getElementById('bookingCell').textContent = bookingInput.value.toUpperCase();
             
-            // Construct the HTML for the description cell with line breaks
-            descCell.innerHTML = `
-                ${bookingText}
-                <br>${timeText}
-                <br>${rateText}
-            `;
+            // New logic: Update description
+            let descriptionText = "UMRAH";
+            const rate = parseFloat(rateInput.value);
 
-            // Calculate the total amount
-            const unitValue = parseFloat(unitInput.value);
-            let totalAmount = 0;
-            if (!isNaN(rateValue) && !isNaN(unitValue)) {
-                totalAmount = rateValue * unitValue;
+            if (selectedMonth && selectedYear) {
+                descriptionText += `<br>(${selectedMonth.toUpperCase()} ${selectedYear})`;
             }
-            // ফরম্যাটিং ফাংশন ব্যবহার করে মোট পরিমাণ আপডেট করা হচ্ছে
-            amountCell.textContent = formatIndianCurrency(totalAmount);
+            if (!isNaN(rate) && rate > 0) {
+                descriptionText += `<br>${formatIndianNumber(rate)}/- PER PERSON`;
+            }
+            document.getElementById('descCell').innerHTML = descriptionText;
+
+            document.getElementById('unitCell').textContent = unitInput.value.toUpperCase();
+
+            // Calculation logic
+            const totalAmount = (parseFloat(rateInput.value) || 0) * (parseFloat(unitInput.value) || 0);
+            document.getElementById('amountCell').textContent = formatIndianNumber(totalAmount) + ' /- ';
             
-            // Calculate the due amount
-            const amountPaidValue = parseFloat(amountPaidInput.value);
-            let dueAmount = totalAmount;
-            if (!isNaN(amountPaidValue)) {
-                dueAmount = totalAmount - amountPaidValue;
-            }
-            // ফরম্যাটিং ফাংশন ব্যবহার করে প্রদান করা পরিমাণ আপডেট করা হচ্ছে
-            amountPaidCell.textContent = formatIndianCurrency(amountPaidValue || 0);
-            // ফরম্যাটিং ফাংশন ব্যবহার করে বাকি পরিমাণ আপডেট করা হচ্ছে
-            dueAmountCell.textContent = formatIndianCurrency(dueAmount);
+            const amountPaid = parseFloat(amountPaidInput.value) || 0;
+            document.getElementById('amountPaidCell').textContent = formatIndianNumber(amountPaid) + ' /- ';
+            
+            const dueAmount = totalAmount - amountPaid;
+            document.getElementById('dueAmountCell').textContent = formatIndianNumber(dueAmount) + ' /- ';
         }
 
-        // Function to update the customer names on the form and split them into two columns
-        function updateFormCustomerNames() {
-            // Clear existing names from both columns
-            firstColumn.innerHTML = '';
-            secondColumn.innerHTML = '';
-            
-            // Select only the spans with the customer name, not the delete button
-            const customerItems = customerList.querySelectorAll('.customer-item .customer-name-text');
-            
-            // Add each customer name to the correct column with a maximum of 4 per column
-            customerItems.forEach((item, index) => {
-                const p = document.createElement('p');
-                // The name is a numbered list item
-                p.textContent = `${index + 1}. ${item.textContent.toUpperCase()}`;
-                p.className = 'text-black mb-1';
-                
-                // If index is less than 4 (0, 1, 2, 3), add to the first column
-                if (index < 4) {
-                    firstColumn.appendChild(p);
-                } 
-                // If index is 4 or greater, add to the second column
-                else {
-                    secondColumn.appendChild(p);
+        // Function to update the payment method display
+        function updatePaymentMethod() {
+            const checkboxes = [
+                {id: 'cashCheckbox', boxId: 'cashBox'},
+                {id: 'accountCheckbox', boxId: 'accountBox'},
+                {id: 'upiCheckbox', boxId: 'upiBox'},
+                {id: 'chequeCheckbox', boxId: 'chequeBox'}
+            ];
+
+            checkboxes.forEach(cb => {
+                const isChecked = document.getElementById(cb.id).checked;
+                const box = document.getElementById(cb.boxId);
+                if (isChecked) {
+                    box.innerHTML = '&#10003;';
+                    box.style.color = '#3b82f6';
+                } else {
+                    box.innerHTML = '';
                 }
             });
         }
 
-        // Function to update the payment method boxes based on checkbox state
-        function updatePaymentMethod() {
-            // The color to use for the checkmark, matching the INVOICE TO name color.
-            const tickColor = '#125b03';
+        // Function to populate Month and Year selects dynamically
+        function populateSelects() {
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            months.forEach(month => {
+                const option = document.createElement('option');
+                option.value = month;
+                option.textContent = month.toUpperCase();
+                monthSelect.appendChild(option);
+            });
 
-            // Update Cash checkbox
-            if (cashCheckbox.checked) {
-                cashBox.textContent = '✓';
-                cashBox.style.color = tickColor;
-            } else {
-                cashBox.textContent = '';
-                cashBox.style.color = '';
-            }
-
-            // Update UPI checkbox
-            if (upiCheckbox.checked) {
-                upiBox.textContent = '✓';
-                upiBox.style.color = tickColor;
-            } else {
-                upiBox.textContent = '';
-                upiBox.style.color = '';
-            }
-            
-            // Update Account checkbox
-            if (accountCheckbox.checked) {
-                accountBox.textContent = '✓';
-                accountBox.style.color = tickColor;
-            } else {
-                accountBox.textContent = '';
-                accountBox.style.color = '';
-            }
-
-            // Update Cheque checkbox
-            if (chequeCheckbox.checked) {
-                chequeBox.textContent = '✓';
-                chequeBox.style.color = tickColor;
-            } else {
-                chequeBox.textContent = '';
-                chequeBox.style.color = '';
+            const currentYear = new Date().getFullYear();
+            for (let year = 2024; year <= 2030; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
             }
         }
-        
-        // Add a customer to the list
+
+        // Customer's name display logic on the form (up to 10 names)
+        function updateFormCustomerNames() {
+            customerNamesOnForm.innerHTML = '';
+            const firstColumn = document.createElement('div');
+            const secondColumn = document.createElement('div');
+            firstColumn.id = 'firstColumn';
+            secondColumn.id = 'secondColumn';
+
+            for (let i = 0; i < Math.min(customers.length, 5); i++) {
+                const p = document.createElement('p');
+                p.textContent = (i + 1) + '. ' + customers[i];
+                firstColumn.appendChild(p);
+            }
+
+            for (let i = 5; i < Math.min(customers.length, 10); i++) {
+                const p = document.createElement('p');
+                p.textContent = (i + 1) + '. ' + customers[i];
+                secondColumn.appendChild(p);
+            }
+
+            customerNamesOnForm.appendChild(firstColumn);
+            customerNamesOnForm.appendChild(secondColumn);
+        }
+
+        // Add customer functionality
         addCustomerButton.addEventListener('click', () => {
-            // Check if the maximum number of customers (8) has been reached
-            if (customerList.children.length >= 8) {
-                console.log("Maximum number of customers (8) reached. Cannot add more.");
-                // You could also disable the button or show a message to the user here.
+            if (customers.length >= 10) {
+                //alert("সর্বোচ্চ ১০টি নাম যুক্ত করা যাবে।");
                 return;
             }
 
-            const newCustomerName = customerNameInput.value.trim();
-            if (newCustomerName) {
-                // Create a new div element for the customer with a delete button
-                const customerItem = document.createElement('div');
-                customerItem.className = 'customer-item';
+            const name = customerNameInput.value.trim();
+            if (name) {
+                const uppercaseName = name.toUpperCase();
+                customers.push(uppercaseName);
+                customerNameInput.value = '';
                 
-                // Create a span for the name with a specific class
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'customer-name-text';
-                nameSpan.textContent = newCustomerName;
+                const newCustomerItem = document.createElement('div');
+                newCustomerItem.className = 'customer-item';
+                newCustomerItem.innerHTML = `<span>${uppercaseName}</span><span class="delete-btn">X</span>`;
+                customerList.appendChild(newCustomerItem);
                 
-                const deleteBtn = document.createElement('span');
-                deleteBtn.className = 'delete-btn';
-                deleteBtn.textContent = '✖';
-
-                // Add a click listener to delete the item
-                deleteBtn.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    customerList.removeChild(customerItem);
+                newCustomerItem.querySelector('.delete-btn').addEventListener('click', (e) => {
+                    const itemToRemove = e.target.closest('.customer-item');
+                    const nameToRemove = itemToRemove.querySelector('span').textContent;
+                    customers = customers.filter(c => c !== nameToRemove);
+                    itemToRemove.remove();
                     updateFormCustomerNames();
                 });
-                
-                // Add a click listener to set this name on the form (for single selection)
-                customerItem.addEventListener('click', () => {
-                    // You can add logic here to highlight the selected name if needed
-                });
-
-                customerItem.appendChild(nameSpan);
-                customerItem.appendChild(deleteBtn);
-                
-                // Append the new customer to the list
-                customerList.appendChild(customerItem);
-                
-                // Clear the input field and update the form
-                customerNameInput.value = '';
                 updateFormCustomerNames();
             }
         });
 
-        // Add event listeners to all input fields
+        // Event listeners for form updates
         nameInput.addEventListener('input', updateForm);
         phoneInput.addEventListener('input', updateForm);
-        // Updated event listener for the new email input
         emailPrefixInput.addEventListener('input', updateForm);
         addressInput.addEventListener('input', updateForm);
         invoiceNoInput.addEventListener('input', updateForm);
-        // "change" ইভেন্ট ব্যবহার করা হয়েছে যাতে ইনপুট বক্সের ভ্যালু পরিবর্তন হলেই ফর্ম আপডেট হয়
         invoiceDateInput.addEventListener('change', updateForm);
         bookingInput.addEventListener('input', updateForm);
         rateInput.addEventListener('input', updateForm);
         unitInput.addEventListener('input', updateForm);
         amountPaidInput.addEventListener('input', updateForm);
         customerNameInput.addEventListener('input', updateForm);
-        
-        // Add event listeners to new select fields
         monthSelect.addEventListener('change', updateForm);
         yearSelect.addEventListener('change', updateForm);
-
-        // Add event listeners to payment method checkboxes
         cashCheckbox.addEventListener('change', updatePaymentMethod);
         accountCheckbox.addEventListener('change', updatePaymentMethod);
         upiCheckbox.addEventListener('change', updatePaymentMethod);
@@ -992,11 +878,93 @@
             window.print();
         });
 
+        // কিবোর্ড নেভিগেশন সেটআপ করার ফাংশন
+        function setupKeyboardNavigation() {
+            let currentFocusIndex = -1; // -1 মানে কোনো ইনপুট ফোকাস করা নেই
+            
+            document.addEventListener('keydown', (e) => {
+                const activeElement = document.activeElement;
+                
+                // সমস্ত ইনপুট ফিল্ড এবং সিলেক্ট ফিল্ডগুলোকে একটি অ্যারেতে রাখা
+                const inputElements = document.querySelectorAll('.edit-panel input:not([type="checkbox"]), .edit-panel select');
+                const checkboxElements = document.querySelectorAll('.edit-panel input[type="checkbox"]');
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+
+                    // যদি কোনো ইনপুট ফোকাস করা না থাকে, তাহলে প্রথম ফিল্ডে ফোকাস করা
+                    if (document.activeElement.tagName === 'BODY' || document.activeElement.tagName === 'HTML') {
+                        inputElements[0].focus();
+                        return;
+                    }
+                    
+                    // কাস্টমার নাম ইনপুট থেকে পেমেন্ট চেক বক্সে ফোকাস পরিবর্তন
+                    if (activeElement === customerNameInput) {
+                        if (checkboxElements.length > 0) {
+                            checkboxElements[0].focus();
+                        }
+                        return;
+                    }
+                    
+                    // অন্যান্য ইনপুট ফিল্ডে নেভিগেট করা
+                    const inputIndex = Array.from(inputElements).indexOf(activeElement);
+                    if (inputIndex !== -1 && inputIndex < inputElements.length - 1) {
+                        inputElements[inputIndex + 1].focus();
+                        return;
+                    }
+
+                    // পেমেন্ট চেক বক্সগুলোতে নেভিগেট করা
+                    const checkboxIndex = Array.from(checkboxElements).indexOf(activeElement);
+                    if (checkboxIndex !== -1 && checkboxIndex < checkboxElements.length - 1) {
+                        checkboxElements[checkboxIndex + 1].focus();
+                        return;
+                    }
+                }
+                
+                // আপ অ্যারো নেভিগেশন
+                if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    
+                    // পেমেন্ট চেক বক্স থেকে কাস্টমার নাম ইনপুটে ফোকাস পরিবর্তন
+                    const checkboxIndex = Array.from(checkboxElements).indexOf(activeElement);
+                    if (checkboxIndex !== -1) {
+                        if (checkboxIndex > 0) {
+                            checkboxElements[checkboxIndex - 1].focus();
+                        } else {
+                            customerNameInput.focus();
+                        }
+                        return;
+                    }
+                    
+                    // অন্যান্য ইনপুট ফিল্ডে নেভিগেট করা
+                    const inputIndex = Array.from(inputElements).indexOf(activeElement);
+                    if (inputIndex > 0) {
+                        inputElements[inputIndex - 1].focus();
+                    }
+                }
+                
+                // এন্টার কী হ্যান্ডেল করা
+                if (e.key === 'Enter') {
+                    if (activeElement === customerNameInput) {
+                        e.preventDefault();
+                        addCustomerButton.click(); // কাস্টমার যোগ করার জন্য বাটন ক্লিক করা
+                        // নাম যুক্ত করার পর কার্সরটা নাম লেখার ঘরেই থাকবে
+                    } else if (Array.from(checkboxElements).includes(activeElement)) {
+                        e.preventDefault();
+                        activeElement.checked = !activeElement.checked; // টিক চিহ্ন টগল করা
+                        updatePaymentMethod();
+                    }
+                }
+            });
+        }
+
         // Initial setup on page load
-        populateSelects();
-        updateFormCustomerNames();
-        // Initial call to update form values based on pre-filled data
-        updateForm();
+        window.onload = function() {
+            populateSelects();
+            updateFormCustomerNames();
+            updateForm();
+            setupKeyboardNavigation();
+        };
     </script>
 </body>
 </html>
