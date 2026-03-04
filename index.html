@@ -1,970 +1,130 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Form</title>
+    <title>Rakibul's Personal Website</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 2rem;
-            min-height: 100vh;
-        }
-
-        /* The container for the invoice form is set to A4 dimensions (210mm x 297mm) */
-        .a4-container {
-            width: 210mm;
-            min-height: 297mm;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 0;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative; /* স্ট্যাম্পের পজিশনিংয়ের জন্য এটি গুরুত্বপূর্ণ */
-        }
-        
-        /* ব্যাকগ্রাউন্ড স্ট্যাম্পের জন্য নতুন ক্লাস */
-        .stamp-watermark {
-            position: absolute;
-            bottom: 50px; /* স্ট্যাম্পটিকে উপরে তোলার জন্য 'bottom' এর মান 20px থেকে 50px এ পরিবর্তন করা হয়েছে */
-            left: 45%; /* স্ট্যাম্পটিকে সামান্য বাম দিকে সরানোর জন্য 'left' এর মান 50% থেকে 45% এ পরিবর্তন করা হয়েছে */
-            transform: translateX(-50%); /* হরাইজন্টালি সেন্টার করার জন্য */
-            width: 100px; /* স্ট্যাম্পের আকার কমিয়ে 100px করা হয়েছে */
-            opacity: 1; /* স্বচ্ছতা 100% করা হয়েছে */
-            z-index: 0; /* নিশ্চিত করা হয়েছে যে এটি সমস্ত কন্টেন্টের পিছনে থাকবে */
-            pointer-events: none; /* যাতে এটি কোনো ক্লিক ইভেন্ট ব্লক না করে */
-        }
-
-        /* The main content area that will grow to fill the available space */
-        .invoice-content {
-            padding: 1.5rem;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative; /* অন্যান্য কন্টেন্টকে স্ট্যাম্পের উপরে রাখতে */
-            z-index: 1;
-        }
-        
-        .top-image {
-            width: 100%;
-            height: auto;
-            max-height: 50mm;
-            object-fit: contain;
-        }
-
-        .bottom-image {
-            width: 100%;
-            height: auto;
-            max-height: 38mm;
-            object-fit: contain;
-        }
-
-        .edit-panel {
-            width: 300px;
-            background-color: white;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-right: 2rem;
-            position: sticky;
-            top: 2rem;
-        }
-
-        .edit-panel input, .edit-panel select {
-            width: 100%;
-            margin-top: 0.25rem;
-            margin-bottom: 0.75rem;
-            padding: 0.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.25rem;
-        }
-        
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 0.5rem;
-        }
-        
-        .print-button {
-            margin-top: 1.5rem;
-            background-color: #3b82f6;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            width: 100%;
-        }
-        
-        .add-customer-button {
-            background-color: #10b981;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 0.5rem;
-        }
-        
-        #customerList {
-            margin-top: 1rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.25rem;
-            padding: 0.5rem;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-        
-        .customer-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem;
-            background-color: #f3f4f6;
-            margin-bottom: 0.5rem;
-            border-radius: 0.25rem;
-            transition: background-color 0.2s;
-            cursor: pointer;
-        }
-        
-        .customer-item:hover {
-            background-color: #e5e7eb;
-        }
-
-        .customer-item .delete-btn {
-            color: #ef4444;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 0 0.5rem;
-        }
-        
-        /* New merged bottom section styles, now using flexbox for print stability */
-        .bottom-section {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: auto; 
-            position: relative;
-        }
-
-        /* This container now aligns the stamp and signature, linking their positions */
-        .merged-elements {
-            width: 100%;
-            display: flex;
-            justify-content: flex-end; /* Changed to flex-end to push the signature to the right */
-            align-items: flex-end;
-            padding: 0 1.5rem;
-            margin-top: 0;
-            padding-top: 2px;
-        }
-
-        /* Container for the stamp, centered within its flex-grow space */
-        .stamp-container {
-            display: flex;
-            justify-content: center;
-            flex-grow: 1;
-            /* Make sure the stamp container doesn't shrink, so it can stay centered */
-            flex-shrink: 0;
-        }
-        
-        .stamp-image {
-            width: 25mm; 
-            height: auto;
-            object-fit: contain;
-        }
-
-        .signature-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        /* A more robust layout for the top section, avoiding absolute positioning */
-        .top-image-container {
-            position: relative;
-        }
-        
-        .money-receipt-text {
-            position: absolute;
-            bottom: 0;
-            right: 1.5rem;
-            transform: translateY(50%);
-            /* Updated font-family for 'MONEY RECEIPT' text */
-            font-family: 'Arial Black', sans-serif;
-            /* Updated color for 'MONEY RECEIPT' text */
-            color: #6e0808;
-        }
-
-        /*
-        * A custom class for the dedicated blank space for names
-        */
-        .customer-names-display {
-            /* This div now uses flex-grow to fill all available space */
-            flex-grow: 1;
-            overflow-y: auto;
-            border: 1px solid #d1d5db;
-            padding: 0.5rem;
-            margin-top: 0.25rem;
-            /* New grid layout for two columns */
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        /*
-        * New style for the watermark image, using an <img> tag for better control
-        */
-        .watermark-image {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            max-width: 65%; 
-            height: auto;
-            opacity: 0.1;
-            z-index: 0;
-            object-fit: contain;
-        }
-        
-        /* The container for the dynamic email input in the edit panel */
-        .email-input-container {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            margin-top: 0.25rem;
-            margin-bottom: 0.75rem;
-            padding: 0.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.25rem;
-            background-color: #f9fafb;
-        }
-
-        /* Styles for the dynamic part of the email input */
-        .email-input-container input {
-            padding: 0; /* Remove padding here to control it on the container */
-            border: none;
-            flex: 1; /* Allow input to grow */
-            background-color: transparent;
-            margin-bottom: 0; /* Override the default margin-bottom */
-        }
-        
-        /* Styles for the static '@gmail.com' text */
-        .email-input-container span {
-            color: #4b5563; /* Gray text color */
-            margin-left: 0.25rem; /* Small space between input and text */
-            font-size: 0.875rem;
-        }
-
-        /* @media print query to fix the mobile printing issue */
-        @media print {
-            /* Set the page size to A4 and remove all margins forcefully */
-            @page {
-                size: A4;
-                margin: 0 !important;
-            }
-
-            /* Hiding the edit panel and print button */
-            .edit-panel, .print-button {
-                display: none !important;
-            }
-
-            /* Forcing a white background and no margins on the body */
-            body {
-                background-color: #fff !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                /* This is a crucial fix for mobile, it forces the content to be the size of the viewport */
-                width: 100vw !important;
-                height: 100vh !important;
-            }
-
-            /* Reseting the container styles to fit A4 page without any overflow */
-            .a4-container {
-                box-shadow: none !important;
-                border: none !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                /* To make it work on both desktop and mobile, we use a combination of units */
-                width: 100% !important;
-                min-height: 100vh !important;
-            }
-            
-            /* Adjusting content padding for a better fit */
-            .invoice-content {
-                padding: 1rem !important;
-            }
-            
-            .bottom-section {
-                margin-top: 0 !important;
-            }
-            
-            .merged-elements {
-                /* Reset margin in print view for predictable spacing */
-                margin-top: 0 !important; 
-                padding-top: 2px !important; /* Also update print view */
-            }
-
-            /* This is the fix for the background color not printing, forcing the browser to print colors */
-            .grid-header {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            
-            /* Ensure text wraps to prevent overflow */
-            .grid > div {
-                overflow-wrap: break-word;
-            }
-            
-            /* Remove the dashed border in print view for a clean look */
-            .customer-names-display {
-                border-style: solid !important; /* Change to solid or none if you prefer */
-                border-color: transparent !important; /* Make the border invisible */
-            }
-            /* Start: Print Fix for 'MONEY RECEIPT' */
-            .top-image-container {
-                position: relative !important;
-            }
-            .money-receipt-text {
-                position: absolute !important;
-                right: 1.5rem !important;
-                bottom: 0 !important;
-                transform: translateY(50%) !important;
-            }
-            /* End: Print Fix for 'MONEY RECEIPT' */
-        }
-        
-        /* Special styles for mobile view to handle the long text without wrapping badly */
-        @media (max-width: 768px) {
-            .top-image-container {
-                position: static;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                padding-top: 1rem;
-            }
-            .money-receipt-text {
-                position: static;
-                transform: none;
-                margin-top: 0.5rem;
-            }
-            .a4-container {
-                width: 100%;
-                min-height: auto;
-                box-shadow: none;
-            }
-            body {
-                padding: 0.5rem;
-            }
-            .edit-panel {
-                width: 100%;
-                margin-right: 0;
-            }
-        }
-        
-        /* New style for focus state on checkboxes, making them more visible */
-        .payment-checkbox:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px #3b82f6, 0 0 0 4px #bfdbfe;
-        }
-    </style>
 </head>
-<body class="bg-gray-100 flex p-8">
+<body class="bg-gray-900 text-white font-sans m-0 p-0">
 
-    <!-- Edit Panel -->
-    <div class="edit-panel">
-        <h2 class="text-xl font-bold mb-4">Edit Panel</h2>
-        <div class="mb-2">
-            <label class="block text-gray-700 font-bold mb-1">Name:</label>
-            <input type="text" id="nameInput" placeholder="Type Name">
-        </div>
-        <div class="mb-2">
-            <label class="block text-gray-700 font-bold mb-1">Phone:</label>
-            <input type="text" id="phoneInput" placeholder="Type Phone Number">
-        </div>
-        <div class="mb-2">
-            <!-- Updated Email Input to pre-fill @gmail.com -->
-            <div class="email-input-container">
-                <input type="text" id="emailPrefixInput" placeholder="Type Email Prefix">
-                <span>@gmail.com</span>
-            </div>
-            <!-- END: Updated Email Input -->
-        </div>
-        <div class="mb-2">
-            <label class="block text-gray-700 font-bold mb-1">Address:</label>
-            <input type="text" id="addressInput" placeholder="Type Address">
-        </div>
-        <div class="mb-2">
-            <label class="block text-gray-700 font-bold mb-1">Invoice No:</label>
-            <input type="text" id="invoiceNoInput" placeholder="Type Invoice Number">
-        </div>
-        <div class="mb-2">
-            <!-- ইনপুট বক্সের টাইপ "date" রাখা হয়েছে -->
-            <label class="block text-gray-700 font-bold mb-1">Invoice Date:</label>
-            <input type="date" id="invoiceDateInput">
+    <!-- আধুনিক নেভিগেশন বার -->
+    <nav class="flex justify-between items-center px-8 py-4 bg-black/50 backdrop-blur-md sticky top-0 z-50 border-b border-gray-800">
+        <div class="text-2xl font-bold tracking-tight">
+            <a href="/" class="hover:text-cyan-400 transition-colors">Home</a>
         </div>
         
-        <!-- Table Content section with individual labels and inputs -->
-        <h3 class="text-lg font-bold mt-4 mb-2">Table Content</h3>
-        <div class="mb-2">
-            <label class="block text-gray-700 font-bold mb-1">Booking For:</label>
-            <!-- Pre-filled with "UMRAH" as requested -->
-            <input type="text" id="bookingInput" value="UMRAH" placeholder="Booking For">
+        <div class="hidden md:flex items-center space-x-8">
+            <a href="/about-me" class="text-gray-300 hover:text-white transition-colors">About me</a>
+            <a href="/my-projects" class="text-gray-300 hover:text-white transition-colors">My projects</a>
+            <button onclick="openAI()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-5 py-2 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg shadow-cyan-500/20">
+                ✨ Ask everything with AI
+            </button>
         </div>
 
-        <!-- New Month and Year Select fields -->
-        <div class="mb-2">
-            <label class="block text-gray-700 font-bold mb-1">Time:</label>
-            <div class="flex space-x-2">
-                <div class="flex-1">
-                    <select id="monthSelect">
-                        <option value="" disabled selected>MONTH</option>
-                        <!-- Options populated by JS -->
-                    </select>
-                </div>
-                <div class="flex-1">
-                    <select id="yearSelect">
-                        <option value="" disabled selected>YEAR</option>
-                        <!-- Options populated by JS -->
-                    </select>
-                </div>
-            </div>
+        <!-- মোবাইল মেনু বাটন -->
+        <div class="md:hidden">
+            <button class="text-white">☰</button>
         </div>
+    </nav>
 
-        <div class="mb-2">
-            <label class="block text-gray-700 font-bold mb-1">Rate:</label>
-            <input type="text" id="rateInput" placeholder="Rate">
-        </div>
-        <div class="mb-2">
-            <label class="block text-gray-700 font-bold mb-1">Unit:</label>
-            <input type="text" id="unitInput" placeholder="Unit">
-        </div>
-        <div class="mt-4">
-            <label class="block text-gray-700 font-bold mb-1">Amount Paid:</label>
-            <input type="text" id="amountPaidInput" placeholder="Amount Paid">
-        </div>
-        
-        <!-- Customer section with new input and button -->
-        <div class="mt-4">
-            <label class="block text-gray-700 font-bold mb-1">Customer's Name:</label>
-            <input type="text" id="customerNameInput" placeholder="Type Name">
-            <button id="addCustomerButton" class="add-customer-button">Add Customer</button>
-        </div>
+    <!-- মেইন কন্টেন্ট এরিয়া -->
+    <main class="flex flex-col items-center justify-center min-height-[80vh] p-10 text-center">
+        <h1 class="text-5xl font-extrabold mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+            স্বাগতম রাকিবুল!
+        </h1>
+        <p class="text-gray-400 max-w-xl text-lg">
+            এটি তোমার নতুন গিটহাব ওয়েবসাইট। এখন থেকে তুমি তোমার প্রোজেক্টগুলো এখানে সুন্দরভাবে সাজিয়ে রাখতে পারবে।
+        </p>
+    </main>
 
-        <!-- Dynamic customer list -->
-        <div class="mt-4">
-            <label class="block text-gray-700 font-bold mb-1">Customer List:</label>
-            <div id="customerList">
-                <!-- Customers will be added here dynamically -->
+    <!-- AI চ্যাট বক্স (Modal) -->
+    <div id="ai-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-gray-800 w-full max-w-md rounded-2xl shadow-2xl border border-gray-700 overflow-hidden">
+            <div class="p-4 border-b border-gray-700 flex justify-between items-center bg-gray-900">
+                <h3 class="text-lg font-bold text-cyan-400 flex items-center gap-2">
+                    <span class="animate-pulse">✨</span> জেমিনি এআই অ্যাসিস্ট্যান্ট
+                </h3>
+                <button onclick="closeAI()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
             </div>
-        </div>
+            
+            <div id="chat-history" class="h-80 overflow-y-auto p-4 space-y-4 text-sm scrollbar-thin scrollbar-thumb-gray-600">
+                <div class="bg-gray-700/50 p-3 rounded-lg border border-gray-600 self-start max-w-[85%]">
+                    স্বাগতম! আমি জেমিনি এআই। রাকিবুলের ওয়েবসাইটে আপনাকে সাহায্য করতে পেরে আমি আনন্দিত।
+                </div>
+            </div>
 
-        <!-- Payment method checkboxes section with corrected alignment -->
-        <div class="mt-4">
-            <label class="block text-gray-700 font-bold mb-2">Payment Method Checkboxes:</label>
-            <!-- New flexbox layout to match the main invoice form's style -->
-            <div class="flex space-x-4 mt-2">
-                <div class="flex flex-col space-y-2">
-                    <div class="flex items-center">
-                        <input type="checkbox" id="cashCheckbox" class="h-4 w-4 payment-checkbox">
-                        <label for="cashCheckbox" class="ml-2">Cash</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="upiCheckbox" class="h-4 w-4 payment-checkbox">
-                        <label for="upiCheckbox" class="ml-2">UPI</label>
-                    </div>
+            <div class="p-4 bg-gray-900 border-t border-gray-700">
+                <div class="flex gap-2">
+                    <input type="text" id="user-input" placeholder="যেকোনো প্রশ্ন লিখুন..." 
+                        class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-cyan-500 text-white">
+                    <button id="send-btn" onclick="askGemini()" 
+                        class="bg-cyan-600 hover:bg-cyan-500 px-4 py-2 rounded-lg transition-colors font-bold">
+                        পাঠান
+                    </button>
                 </div>
-                <div class="flex flex-col space-y-2">
-                    <div class="flex items-center">
-                        <input type="checkbox" id="accountCheckbox" class="h-4 w-4 payment-checkbox">
-                        <label for="accountCheckbox" class="ml-2">Account</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="chequeCheckbox" class="h-4 w-4 payment-checkbox">
-                        <label for="chequeCheckbox" class="ml-2">Cheque</label>
-                    </div>
-                </div>
+                <div id="loading" class="hidden text-xs text-cyan-500 mt-2 italic animate-pulse">এআই চিন্তা করছে...</div>
             </div>
-        </div>
-
-        <!-- Print Button -->
-        <button id="printButton" class="print-button">Print Invoice</button>
-    </div>
-    
-    <!-- A4 Form Container -->
-    <div class="a4-container shadow-lg rounded-lg">
-        <!-- স্ট্যাম্পের জন্য নতুন ইমেজ ট্যাগ -->
-        <img src="https://lh3.googleusercontent.com/pw/AP1GczNYlYr-c3zmj710XwmGHWdK-Nuv6A3xqa_C4yRLLe3IFhuK4NxVygVs3keQCBlixksDUQhy7jcr71-AdbtJpPouXgWmDqOc8MBxEp1_XeDYzTiVCm6H-4Az7NxW7HtCdM9fUxDW2XmzGftE7aX-eW3Z=w945-h945-s-no-gm?authuser=0" alt="" class="stamp-watermark">
-
-        <!-- Top Image Section with Money Receipt text aligned using flexbox -->
-        <div class="top-image-container">
-            <img src="https://lh3.googleusercontent.com/pw/AP1GczP-nVNgVK20SaA9VE440rrSdD-iluAmeoH9G1b0CiFXm78y36tce3SQ8rkkWSfnb01c7Ab3Dnd83uG1nnlqbHkv3VNuHfL_MSNg862bluA0n0-DdjaTJhLojQxEq2DYnG0a0pUFzZK4_DLi5E8pzIfU=w1240-h208-s-no-gm?authuser=0" alt="Top of the invoice" class="top-image">
-            <div class="money-receipt-text">
-                <span id="moneyReceipt" class="font-bold text-3xl">MONEY RECEIPT</span>
-            </div>
-        </div>
-
-        <!-- Invoice Details Section -->
-        <div class="invoice-content relative">
-            <div class="flex justify-between items-start mb-6 flex-shrink-0">
-                <!-- Left Section -->
-                <div class="w-1/2">
-                    <p class="text-blue-600 text-lg font-bold">INVOICE TO.</p>
-                    <!-- Updated color for the name field -->
-                    <p id="invoiceToName" class="font-bold text-[#125b03] text-xl mt-1"></p>
-                    <p class="mt-2 text-blue-600">Phone: <span id="invoiceToPhone" class="text-black ml-1"></span></p>
-                    <p class="text-blue-600">Email: <span id="invoiceToEmail" class="text-black ml-1"></span></p>
-                    <p class="text-blue-600">Address: <span id="invoiceToAddress" class="text-black ml-1"></span></p>
-                </div>
-
-                <!-- Right Section -->
-                <div class="w-1/2 flex flex-col items-end">
-                    <!-- Updated Invoice No. span and label -->
-                    <p class="text-blue-600">Invoice No: <span id="invoiceNo" class="text-black font-normal ml-1"></span></p>
-                    <p class="text-blue-600 mt-2">Invoice Date: <span id="invoiceDate" class="text-black font-normal ml-1"></span></p>
-                    <p class="text-blue-600 font-bold mt-4">PAYMENT METHOD</p>
-                    <div class="flex space-x-4 mt-2">
-                        <div class="flex flex-col space-y-2">
-                            <div class="flex items-center">
-                                <!-- The text color of the tick will be updated by JS -->
-                                <span id="cashBox" class="w-4 h-4 border border-black mr-2 text-center text-sm font-bold"></span>
-                                <span class="text-black">Cash</span>
-                            </div>
-                            <div class="flex items-center">
-                                <!-- The text color of the tick will be updated by JS -->
-                                <span id="upiBox" class="w-4 h-4 border border-black mr-2 text-center text-sm font-bold"></span>
-                                <span class="text-black">UPI</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-col space-y-2">
-                            <div class="flex items-center">
-                                <!-- The text color of the tick will be updated by JS -->
-                                <span id="accountBox" class="w-4 h-4 border border-black mr-2 text-center text-sm font-bold"></span>
-                                <span class="text-black">Account</span>
-                            </div>
-                            <div class="flex items-center">
-                                <!-- The text color of the tick will be updated by JS -->
-                                <span id="chequeBox" class="w-4 h-4 border border-black mr-2 text-center text-sm font-bold"></span>
-                                <span class="text-black">Cheque</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Watermark Layer (Now as a sibling to the table, but within the relative parent) -->
-            <img src="https://lh3.googleusercontent.com/pw/AP1GczObm7bQ6s9CmzxkctALvk2osGPajcBDYy4MwbsrjKQ80fCionvx572F_6OIfcAhpXyUwkyxqI-6K6L1xRgsXvzQM5zOR510Dz09JGRGG4qrZwdGa1Rfg3J1e_nBP71R1n5eARFFOligq9Db9blXalCO=w1209-h945-s-no-gm?authuser=0" alt="Watermark Logo" class="watermark-image">
-            <!-- Table Section. Fixed height of 400px as requested by the user. -->
-            <div class="border border-blue-600 rounded-lg mt-4 relative z-10 flex flex-col h-[400px]">
-                <!-- Table Content Layer -->
-                <div class="flex flex-col flex-grow">
-                    <!-- Table Header - New grid layout with 4 columns -->
-                    <div class="grid grid-cols-[1fr_2fr_1fr_1fr] bg-blue-600 text-white font-bold text-center grid-header border-b border-blue-600 flex-shrink-0">
-                        <div class="p-2 border-r border-blue-400">BOOKING FOR</div>
-                        <div class="p-2 border-r border-blue-400">DESCRIPTION</div>
-                        <div class="p-2 border-r border-blue-400">UNIT</div>
-                        <div class="p-2">AMOUNT</div>
-                    </div>
-                    <!-- Main Content Row - Now flex-grow to absorb the empty space -->
-                    <div class="grid grid-cols-[1fr_2fr_1fr_1fr] text-black text-center flex-grow">
-                        <!-- The height of this row will now expand dynamically -->
-                        <div id="bookingCell" class="p-2 border-r border-blue-600 text-center"></div>
-                        <div id="descCell" class="p-2 border-r border-blue-600 text-center"></div>
-                        <div id="unitCell" class="p-2 border-r border-blue-600 text-center"></div>
-                        <div id="amountCell" class="p-2 text-center"></div>
-                    </div>
-                    <!-- Amount Paid Row - flex-shrink-0 to not shrink -->
-                    <div class="grid grid-cols-[1fr_2fr_1fr_1fr] text-black text-center flex-shrink-0">
-                        <div class="p-2 border-r border-blue-600"></div>
-                        <div class="p-2 border-r border-blue-600"></div>
-                        <div class="p-2 border-r border-blue-600 font-bold text-[#094ea0] text-center border-t border-b border-blue-600">Amount Paid</div>
-                        <div id="amountPaidCell" class="p-2 font-bold text-center border-t border-b border-blue-600"></div>
-                    </div>
-                    <!-- Due Amount Row - flex-shrink-0 to not shrink -->
-                    <div class="grid grid-cols-[1fr_2fr_1fr_1fr] text-black text-center flex-shrink-0">
-                        <div class="p-2 border-r border-blue-600"></div>
-                        <div class="p-2 border-r border-blue-600"></div>
-                        <div class="p-2 border-r border-blue-600 font-bold text-red-600 text-center">Due Amount</div>
-                        <div id="dueAmountCell" class="p-2 font-bold text-red-600 text-center"></div>
-                    </div>
-                </div>
-            </div>
-            <!-- Customer names section is now directly below the table, with no top margin. -->
-            <div class="flex flex-col justify-start text-left mt-0 flex-shrink-0">
-                <p class="text-blue-600 font-bold underline">Customer's Name</p>
-                <!-- This is the new container for the two-column layout -->
-                <div class="customer-names-display" id="customerNamesOnForm">
-                    <!-- The two columns will be rendered here by JavaScript -->
-                    <div id="firstColumn"></div>
-                    <div id="secondColumn"></div>
-                </div>
-            </div>
-        </div>
-        <!-- Bottom section with stamp and signature, now using flexbox -->
-        <div class="bottom-section">
-            <!-- This container will hold the stamp and signature sections side-by-side -->
-            <div class="merged-elements">
-                <!-- The stamp container is here -->
-                <div class="stamp-container">
-                    <img id="stampImage" src="https://lh3.googleusercontent.com/pw/AP1GczOpW9_b0_Ww4Vb_p78iR3z8M7Yf-fB0C2O-0q2J1I8tT5H1y0S8S0n6X9v_l6K9o-5x_k_z_5o_9_b_r_4_f_5_g_x_z_9-c-c-d-f-b-w=w354-h346-s-no-gm?authuser=0" alt="Company Stamp" class="stamp-image hidden" />
-                </div>
-                <!-- The signature section is here -->
-                <div class="signature-section">
-                    <!-- The signature image is now hidden by default as per a previous request -->
-                    <img id="signatureImage" src="https://lh3.googleusercontent.com/pw/AP1GczO_l5sX7yC6W4Q-1G4E7Y3l-i5x-X1t_s_0_n-x_o_p_q_r_s_t_u_v_w_x_y_z_5q_u=w354-h346-s-no-gm?authuser=0" alt="Signature" class="w-24 h-auto object-contain hidden" />
-                    <!-- Updated text and styling as per the user's request -->
-                    <p class="text-black pt-2 mt-2 border-t border-black">Name & Signature</p>
-                </div>
-            </div>
-            <!-- Bottom image now has flex-shrink-0 to not shrink with content -->
-            <img src="https://lh3.googleusercontent.com/pw/AP1GczNuwfe7w6GcU14Sf-ObDjvkIQuoiAlhTK_8SZ3UEdY9GZEYLOaVVHfAK-mUvb6JDviKg3FhmL_V3o_O238zptuBicOA3g_GJYSVI601UosmH_fh4DZI_lu4GQ8Vg_jV5hj9E1Nv1hBlNqI3KWzypDae=w1240-h158-s-no-gm?authuser=0" alt="Bottom of the invoice" class="bottom-image flex-shrink-0">
         </div>
     </div>
 
-    <!-- JavaScript code for dynamic functionality and keyboard shortcuts -->
     <script>
-        // ফর্মের বিভিন্ন উপাদানকে অ্যাক্সেস করার জন্য ভেরিয়েবল তৈরি করা হয়েছে
-        const nameInput = document.getElementById('nameInput');
-        const phoneInput = document.getElementById('phoneInput');
-        const emailPrefixInput = document.getElementById('emailPrefixInput');
-        const addressInput = document.getElementById('addressInput');
-        const invoiceNoInput = document.getElementById('invoiceNoInput');
-        const invoiceDateInput = document.getElementById('invoiceDateInput');
-        const bookingInput = document.getElementById('bookingInput');
-        const rateInput = document.getElementById('rateInput');
-        const unitInput = document.getElementById('unitInput');
-        const amountPaidInput = document.getElementById('amountPaidInput');
-        const customerNameInput = document.getElementById('customerNameInput');
-        const addCustomerButton = document.getElementById('addCustomerButton');
-        const customerList = document.getElementById('customerList');
-        const customerNamesOnForm = document.getElementById('customerNamesOnForm');
-        const monthSelect = document.getElementById('monthSelect');
-        const yearSelect = document.getElementById('yearSelect');
-        const cashCheckbox = document.getElementById('cashCheckbox');
-        const accountCheckbox = document.getElementById('accountCheckbox');
-        const upiCheckbox = document.getElementById('upiCheckbox');
-        const chequeCheckbox = document.getElementById('chequeCheckbox');
-        const printButton = document.getElementById('printButton');
-        const stampImage = document.getElementById('stampImage');
-        const signatureImage = document.getElementById('signatureImage');
+        function openAI() { document.getElementById('ai-modal').classList.remove('hidden'); }
+        function closeAI() { document.getElementById('ai-modal').classList.add('hidden'); }
 
-        // Customer data array
-        let customers = [];
+        async function askGemini() {
+            const inputField = document.getElementById('user-input');
+            const chatHistory = document.getElementById('chat-history');
+            const loading = document.getElementById('loading');
+            const userText = inputField.value.trim();
 
-        // একটি অ্যারেতে ফোকাসযোগ্য ইনপুট ফিল্ডগুলো সংরক্ষণ করা হয়েছে কিবোর্ড নেভিগেশনের জন্য
-        const focusableElements = [
-            nameInput,
-            phoneInput,
-            emailPrefixInput,
-            addressInput,
-            invoiceNoInput,
-            invoiceDateInput,
-            bookingInput,
-            monthSelect,
-            yearSelect,
-            rateInput,
-            unitInput,
-            amountPaidInput,
-            customerNameInput
-        ];
-        
-        // পেমেন্ট মেথড চেক বক্সগুলোর একটি অ্যারে
-        const paymentCheckboxes = [
-            cashCheckbox,
-            accountCheckbox,
-            upiCheckbox,
-            chequeCheckbox
-        ];
+            if (!userText) return;
 
-        // Function to format numbers in Indian system
-        function formatIndianNumber(num) {
-            if (isNaN(num) || num === null || num === undefined) {
-                return '';
-            }
-            const numberString = Math.round(num).toString();
-            if (numberString.length <= 3) {
-                return numberString;
-            }
-            const lastThree = numberString.substring(numberString.length - 3);
-            const otherNumbers = numberString.substring(0, numberString.length - 3);
-            const formattedOthers = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',');
-            return formattedOthers + ',' + lastThree;
-        }
-        
-        // Function to update the form values from input fields
-        function updateForm() {
-            // Update the header details with uppercase for most fields, lowercase for email
-            document.getElementById('invoiceToName').textContent = nameInput.value.toUpperCase();
-            document.getElementById('invoiceToPhone').textContent = phoneInput.value.toUpperCase();
-            document.getElementById('invoiceToEmail').textContent = emailPrefixInput.value.toLowerCase() + '@gmail.com';
-            document.getElementById('invoiceToAddress').textContent = addressInput.value.toUpperCase();
-
-            // Updated Invoice No. formatting logic to remove all spaces
-            const selectedMonth = monthSelect.value;
-            const selectedYear = yearSelect.value;
-            const invoiceNoValue = invoiceNoInput.value;
-            let formattedInvoiceNo = '';
-
-            if (selectedMonth && selectedYear && invoiceNoValue) {
-                const monthShort = selectedMonth.substring(0, 3).toUpperCase();
-                const yearShort = selectedYear.toString().slice(-2);
-                formattedInvoiceNo = `NIT/${monthShort}${yearShort}/${invoiceNoValue.toUpperCase()}`;
-            } else {
-                formattedInvoiceNo = invoiceNoValue.toUpperCase();
-            }
-            document.getElementById('invoiceNo').textContent = formattedInvoiceNo;
-
-            // Handle invoice date display
-            let invoiceDateValue = invoiceDateInput.value;
-            if (invoiceDateValue) {
-                const [year, month, day] = invoiceDateValue.split('-');
-                document.getElementById('invoiceDate').textContent = `${day}/${month}/${year}`;
-            } else {
-                document.getElementById('invoiceDate').textContent = '';
-            }
-
-            // Update the table details
-            document.getElementById('bookingCell').textContent = bookingInput.value.toUpperCase();
+            // ইউজার মেসেজ যোগ করা
+            chatHistory.innerHTML += `
+                <div class="flex justify-end">
+                    <div class="bg-cyan-700 p-3 rounded-lg max-w-[85%] text-white shadow-md">
+                        ${userText}
+                    </div>
+                </div>`;
             
-            // New logic: Update description
-            let descriptionText = "UMRAH";
-            const rate = parseFloat(rateInput.value);
+            inputField.value = '';
+            loading.classList.remove('hidden');
+            chatHistory.scrollTop = chatHistory.scrollHeight;
 
-            if (selectedMonth && selectedYear) {
-                descriptionText += `<br>(${selectedMonth.toUpperCase()} ${selectedYear})`;
-            }
-            if (!isNaN(rate) && rate > 0) {
-                descriptionText += `<br>${formatIndianNumber(rate)}/- PER PERSON`;
-            }
-            document.getElementById('descCell').innerHTML = descriptionText;
+            const apiKey = ""; // Runtime-এ ইনজেক্ট হবে
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
-            document.getElementById('unitCell').textContent = unitInput.value.toUpperCase();
-
-            // Calculation logic
-            const totalAmount = (parseFloat(rateInput.value) || 0) * (parseFloat(unitInput.value) || 0);
-            document.getElementById('amountCell').textContent = formatIndianNumber(totalAmount) + ' /- ';
-            
-            const amountPaid = parseFloat(amountPaidInput.value) || 0;
-            document.getElementById('amountPaidCell').textContent = formatIndianNumber(amountPaid) + ' /- ';
-            
-            const dueAmount = totalAmount - amountPaid;
-            document.getElementById('dueAmountCell').textContent = formatIndianNumber(dueAmount) + ' /- ';
-        }
-
-        // Function to update the payment method display
-        function updatePaymentMethod() {
-            const checkboxes = [
-                {id: 'cashCheckbox', boxId: 'cashBox'},
-                {id: 'accountCheckbox', boxId: 'accountBox'},
-                {id: 'upiCheckbox', boxId: 'upiBox'},
-                {id: 'chequeCheckbox', boxId: 'chequeBox'}
-            ];
-
-            checkboxes.forEach(cb => {
-                const isChecked = document.getElementById(cb.id).checked;
-                const box = document.getElementById(cb.boxId);
-                if (isChecked) {
-                    box.innerHTML = '&#10003;';
-                    box.style.color = '#3b82f6';
-                } else {
-                    box.innerHTML = '';
-                }
-            });
-        }
-
-        // Function to populate Month and Year selects dynamically
-        function populateSelects() {
-            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            months.forEach(month => {
-                const option = document.createElement('option');
-                option.value = month;
-                option.textContent = month.toUpperCase();
-                monthSelect.appendChild(option);
-            });
-
-            const currentYear = new Date().getFullYear();
-            for (let year = 2024; year <= 2030; year++) {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                yearSelect.appendChild(option);
-            }
-        }
-
-        // Customer's name display logic on the form (up to 10 names)
-        function updateFormCustomerNames() {
-            customerNamesOnForm.innerHTML = '';
-            const firstColumn = document.createElement('div');
-            const secondColumn = document.createElement('div');
-            firstColumn.id = 'firstColumn';
-            secondColumn.id = 'secondColumn';
-
-            for (let i = 0; i < Math.min(customers.length, 5); i++) {
-                const p = document.createElement('p');
-                p.textContent = (i + 1) + '. ' + customers[i];
-                firstColumn.appendChild(p);
-            }
-
-            for (let i = 5; i < Math.min(customers.length, 10); i++) {
-                const p = document.createElement('p');
-                p.textContent = (i + 1) + '. ' + customers[i];
-                secondColumn.appendChild(p);
-            }
-
-            customerNamesOnForm.appendChild(firstColumn);
-            customerNamesOnForm.appendChild(secondColumn);
-        }
-
-        // Add customer functionality
-        addCustomerButton.addEventListener('click', () => {
-            if (customers.length >= 10) {
-                //alert("সর্বোচ্চ ১০টি নাম যুক্ত করা যাবে।");
-                return;
-            }
-
-            const name = customerNameInput.value.trim();
-            if (name) {
-                const uppercaseName = name.toUpperCase();
-                customers.push(uppercaseName);
-                customerNameInput.value = '';
-                
-                const newCustomerItem = document.createElement('div');
-                newCustomerItem.className = 'customer-item';
-                newCustomerItem.innerHTML = `<span>${uppercaseName}</span><span class="delete-btn">X</span>`;
-                customerList.appendChild(newCustomerItem);
-                
-                newCustomerItem.querySelector('.delete-btn').addEventListener('click', (e) => {
-                    const itemToRemove = e.target.closest('.customer-item');
-                    const nameToRemove = itemToRemove.querySelector('span').textContent;
-                    customers = customers.filter(c => c !== nameToRemove);
-                    itemToRemove.remove();
-                    updateFormCustomerNames();
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: userText }] }],
+                        systemInstruction: { parts: [{ text: "You are a helpful AI assistant for Rakibul's GitHub website. Respond in Bengali with a friendly tone." }] }
+                    })
                 });
-                updateFormCustomerNames();
+
+                const data = await response.json();
+                const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "দুঃখিত, কোনো উত্তর পাওয়া যায়নি।";
+                
+                chatHistory.innerHTML += `
+                    <div class="flex justify-start">
+                        <div class="bg-gray-700 p-3 rounded-lg max-w-[85%] border border-gray-600 shadow-md">
+                            ${aiResponse}
+                        </div>
+                    </div>`;
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            } catch (error) {
+                chatHistory.innerHTML += `<div class="text-red-400 text-center text-xs">কানেকশন এরর! আবার চেষ্টা করুন।</div>`;
+            } finally {
+                loading.classList.add('hidden');
             }
-        });
-
-        // Event listeners for form updates
-        nameInput.addEventListener('input', updateForm);
-        phoneInput.addEventListener('input', updateForm);
-        emailPrefixInput.addEventListener('input', updateForm);
-        addressInput.addEventListener('input', updateForm);
-        invoiceNoInput.addEventListener('input', updateForm);
-        invoiceDateInput.addEventListener('change', updateForm);
-        bookingInput.addEventListener('input', updateForm);
-        rateInput.addEventListener('input', updateForm);
-        unitInput.addEventListener('input', updateForm);
-        amountPaidInput.addEventListener('input', updateForm);
-        customerNameInput.addEventListener('input', updateForm);
-        monthSelect.addEventListener('change', updateForm);
-        yearSelect.addEventListener('change', updateForm);
-        cashCheckbox.addEventListener('change', updatePaymentMethod);
-        accountCheckbox.addEventListener('change', updatePaymentMethod);
-        upiCheckbox.addEventListener('change', updatePaymentMethod);
-        chequeCheckbox.addEventListener('change', updatePaymentMethod);
-
-        // Add event listener for the print button
-        printButton.addEventListener('click', () => {
-            window.print();
-        });
-
-        // কিবোর্ড নেভিগেশন সেটআপ করার ফাংশন
-        function setupKeyboardNavigation() {
-            let currentFocusIndex = -1; // -1 মানে কোনো ইনপুট ফোকাস করা নেই
-            
-            document.addEventListener('keydown', (e) => {
-                const activeElement = document.activeElement;
-                
-                // সমস্ত ইনপুট ফিল্ড এবং সিলেক্ট ফিল্ডগুলোকে একটি অ্যারেতে রাখা
-                const inputElements = document.querySelectorAll('.edit-panel input:not([type="checkbox"]), .edit-panel select');
-                const checkboxElements = document.querySelectorAll('.edit-panel input[type="checkbox"]');
-
-                if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-
-                    // যদি কোনো ইনপুট ফোকাস করা না থাকে, তাহলে প্রথম ফিল্ডে ফোকাস করা
-                    if (document.activeElement.tagName === 'BODY' || document.activeElement.tagName === 'HTML') {
-                        inputElements[0].focus();
-                        return;
-                    }
-                    
-                    // কাস্টমার নাম ইনপুট থেকে পেমেন্ট চেক বক্সে ফোকাস পরিবর্তন
-                    if (activeElement === customerNameInput) {
-                        if (checkboxElements.length > 0) {
-                            checkboxElements[0].focus();
-                        }
-                        return;
-                    }
-                    
-                    // অন্যান্য ইনপুট ফিল্ডে নেভিগেট করা
-                    const inputIndex = Array.from(inputElements).indexOf(activeElement);
-                    if (inputIndex !== -1 && inputIndex < inputElements.length - 1) {
-                        inputElements[inputIndex + 1].focus();
-                        return;
-                    }
-
-                    // পেমেন্ট চেক বক্সগুলোতে নেভিগেট করা
-                    const checkboxIndex = Array.from(checkboxElements).indexOf(activeElement);
-                    if (checkboxIndex !== -1 && checkboxIndex < checkboxElements.length - 1) {
-                        checkboxElements[checkboxIndex + 1].focus();
-                        return;
-                    }
-                }
-                
-                // আপ অ্যারো নেভিগেশন
-                if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    
-                    // পেমেন্ট চেক বক্স থেকে কাস্টমার নাম ইনপুটে ফোকাস পরিবর্তন
-                    const checkboxIndex = Array.from(checkboxElements).indexOf(activeElement);
-                    if (checkboxIndex !== -1) {
-                        if (checkboxIndex > 0) {
-                            checkboxElements[checkboxIndex - 1].focus();
-                        } else {
-                            customerNameInput.focus();
-                        }
-                        return;
-                    }
-                    
-                    // অন্যান্য ইনপুট ফিল্ডে নেভিগেট করা
-                    const inputIndex = Array.from(inputElements).indexOf(activeElement);
-                    if (inputIndex > 0) {
-                        inputElements[inputIndex - 1].focus();
-                    }
-                }
-                
-                // এন্টার কী হ্যান্ডেল করা
-                if (e.key === 'Enter') {
-                    if (activeElement === customerNameInput) {
-                        e.preventDefault();
-                        addCustomerButton.click(); // কাস্টমার যোগ করার জন্য বাটন ক্লিক করা
-                        // নাম যুক্ত করার পর কার্সরটা নাম লেখার ঘরেই থাকবে
-                    } else if (Array.from(checkboxElements).includes(activeElement)) {
-                        e.preventDefault();
-                        activeElement.checked = !activeElement.checked; // টিক চিহ্ন টগল করা
-                        updatePaymentMethod();
-                    }
-                }
-            });
         }
 
-        // Initial setup on page load
-        window.onload = function() {
-            populateSelects();
-            updateFormCustomerNames();
-            updateForm();
-            setupKeyboardNavigation();
-        };
+        document.getElementById('user-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') askGemini();
+        });
     </script>
 </body>
 </html>
